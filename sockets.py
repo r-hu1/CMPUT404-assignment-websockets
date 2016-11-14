@@ -27,8 +27,6 @@ sockets = Sockets(app)
 app.debug = True
 
 
-# ---- self code
-
 clients = list()
 
 class Client:
@@ -40,8 +38,6 @@ class Client:
     
     def get(self):
         return self.queue.get()
-
-#--------------------------------
 
 
 
@@ -82,12 +78,10 @@ myWorld = World()
 
 def set_listener( entity, data ):
     ''' do something with the update ! '''
-    
-#--------------self code
+
     
     for client in clients:
         client.put(json.dumps({entity: data}))
-#-----------------------------
 
 myWorld.add_set_listener( set_listener )
         
@@ -95,16 +89,12 @@ myWorld.add_set_listener( set_listener )
 def hello():
     '''Return something coherent here.. perhaps redirect to /static/index.html '''
     
-    # -------------- self code
     return flask.redirect('/static/index.html')
-#----------------------
 
 
 def read_ws(ws,client):
     '''A greenlet function that reads from the websocket and updates the world'''
     # XXX: TODO IMPLEMENT ME
-    
-    # ---------------self code
 
     try :
         while True:
@@ -126,9 +116,6 @@ def read_ws(ws,client):
         '''read done'''
         pass
 
-#retrun None
-#----------------------------------------
-
 
 @sockets.route('/subscribe')
 def subscribe_socket(ws):
@@ -136,8 +123,6 @@ def subscribe_socket(ws):
        websocket and read updates from the websocket '''
     # XXX: TODO IMPLEMENT ME
 
-
-# ---------- self code
 
     client = Client()
     clients.append(client)
@@ -153,8 +138,6 @@ def subscribe_socket(ws):
     finally:
         clients.remove(client)
         gevent.kill(g)
-
-# ----------------------
 
 
 
@@ -174,7 +157,6 @@ def flask_post_json():
 def update(entity):
     '''update the entities via this interface'''
     
-    #------------self code
     if request.method == 'POST':
         myWorld.set(entity, flask_post_json())
     elif request.method =='PUT':
@@ -183,14 +165,11 @@ def update(entity):
             myWorld.update(entity, key, updates[key])
     return flask.jsonify(myWorld.get(entity))
 
-#----------------------
 
 
 @app.route("/world", methods=['POST','GET'])    
 def world():
     '''you should probably return the world here'''
-
-#----------------- self code
     if request.method == 'GET':
         return flask.jsonify(myWorld.world())
     elif request.method == 'POST':
@@ -200,7 +179,6 @@ def world():
             for key in updates:
                 myWorld.set(entity, key, updates[key])
         return flask.jsonify(myWorld.world())
-#----------------------------
 
 @app.route("/entity/<entity>")
 def get_entity(entity):
