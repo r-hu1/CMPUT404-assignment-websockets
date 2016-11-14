@@ -6,7 +6,7 @@
     <meta content='width=device-width; height=device-height; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;' name='viewport' />
     <meta name="viewport" content="width=device-width" />
     <meta name="license" content="
-        Copyright 2013 Google, Abram Hindle
+        Copyright 2016 Google, Abram Hindle, Cheng Yao Hu
         
         Licensed under the Apache License, Version 2.0 (the "License");
         you may not use this file except in compliance with the License.
@@ -243,13 +243,13 @@ mouse = (function() {
 //XXX: TODO Make these prettier!
 
 mouse.mousedowners.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'#e028c7','radius':60, 'stroke-width': 7, 'stroke-colour': '#e028c7', 'alpha': 0.4});
+    addEntityWithoutName({'x':x,'y':y,'colour':'#'+(Math.random()*0xFFFFFF<<0).toString(16),'radius':60, 'stroke-width': 7, 'stroke-colour': '#'+(Math.random()*0xFFFFFF<<0).toString(16), 'alpha': 0.4});
 });
 mouse.mouseuppers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'#3aa6d0', 'radius':40, 'stroke-width': 7, 'stroke-colour': '#e028c7', 'alpha': 0.4});
+    addEntityWithoutName({'x':x,'y':y,'colour':'#'+(Math.random()*0xFFFFFF<<0).toString(16), 'radius':40, 'stroke-width': 7, 'stroke-colour': '#'+(Math.random()*0xFFFFFF<<0).toString(16), 'alpha': 0.4});
 });
 mouse.mousedraggers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'green','radius':10, 'stroke-width': 3, 'stroke-colour': '#e028c7', 'alpha': 0.6});
+    addEntityWithoutName({'x':x,'y':y,'colour':'#'+(Math.random()*0xFFFFFF<<0).toString(16),'radius':10, 'stroke-width': 3, 'stroke-colour': '#'+(Math.random()*0xFFFFFF<<0).toString(16), 'alpha': 0.6});
 });
 
 

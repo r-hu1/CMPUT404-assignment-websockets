@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-# Copyright (c) 2013-2014 Abram Hindle
+# Copyright (c) 2013-2016 Abram Hindle, Cheng Yao Hu
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -91,8 +91,16 @@ def hello():
     
     return flask.redirect('/static/index.html')
 
+def send_all(msg):
+    for client in clients:
+        client.put( msg )
 
+def send_all_json(obj):
+    send_all( json.dumps(obj) )
 def read_ws(ws,client):
+    
+    
+    
     '''A greenlet function that reads from the websocket and updates the world'''
     # XXX: TODO IMPLEMENT ME
 
@@ -103,12 +111,12 @@ def read_ws(ws,client):
             
             if (msg is not None):
                 packet = json.loads(msg)
-                #send_all_json(packet)
-                for name, data in packet.iteritems():
-                    entity = myWorld.get(name)
-                    for i, j in data.iteritems():
-                        entity[i] = j
-                    myWorld.set(name, entity)
+                send_all_json(packet)
+#                for name, data in packet.iteritems():
+#                    entity = myWorld.get(name)
+#                    for i, j in data.iteritems():
+#                        entity[i] = j
+#                    myWorld.set(name, entity)
             else:
                 break
     
