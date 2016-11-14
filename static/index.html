@@ -53,9 +53,13 @@ function drawCircle(context,entity) {
         var y = entity["y"];
         //moveTo(x,y);
         fillStyle = entity["colour"];
-        strokeStyle = fillStyle;
-        arc(x, y, (entity["radius"])?entity["radius"]:50, 0, 2.0 * Math.PI, false);  
-        stroke();                                
+        
+        strokeStyle = entity["stroke-colour"]; //fillStyle;
+        context.globalAlpha = entity["alpha"];
+        
+        arc(x, y, (entity["radius"])?entity["radius"]:50, 0, 2.0 * Math.PI, false);
+        stroke();
+        fill();
     }
 }
 
@@ -81,6 +85,13 @@ function clearFrame() {
 // This actually draws the frame
 function renderFrame() {
     clearFrame();
+    
+    context.fillStyle="lightgray";
+    context.fillRect(0,0, canvas.width, canvas.height);
+    
+    context.fill();
+    
+    
     for (var key in world) {
         var entity = world[key];
         drawCircle(context,prepEntity(entity));
@@ -125,6 +136,11 @@ function addEntity(entity, data) {
     world[entity] = data;
     drawNextFrame(); // (but should we?)
     //XXX: Send a XHTML Request that updates the entity you just modified!
+    var entity_item = {};
+    entity_item[entity] = data;
+    
+    socket.send(JSON.stringify(entity_item));
+    
 }
 var counter = 0;
 function addEntityWithoutName(data) {
@@ -230,18 +246,17 @@ mouse = (function() {
 
 // Add the application specific mouse listeners!
 //XXX: TODO Make these prettier!
+
 mouse.mousedowners.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'blue'});
+    addEntityWithoutName({'x':x,'y':y,'colour':'#e028c7','radius':60, 'stroke-width': 7, 'stroke-colour': '#e028c7', 'alpha': 0.4});
 });
-
 mouse.mouseuppers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'red'});
+    addEntityWithoutName({'x':x,'y':y,'colour':'#3aa6d0', 'radius':40, 'stroke-width': 7, 'stroke-colour': '#e028c7', 'alpha': 0.4});
+});
+mouse.mousedraggers.push(function(x,y,clicked,e) {
+    addEntityWithoutName({'x':x,'y':y,'colour':'green','radius':10, 'stroke-width': 3, 'stroke-colour': '#e028c7', 'alpha': 0.6});
 });
 
-mouse.mousedraggers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'green',
-                          'radius':10});
-});
 
 
 function update() {
@@ -253,6 +268,7 @@ function wsSetup() {
     var url = "ws://"+host+"/subscribe";   
     socket = new WebSocket(url);
     socket.onopen = function() {
+        socket.send("start");
         //XXX: TODO What are you going to do here?
     };
     socket.onerror = function(msg) {
@@ -261,7 +277,13 @@ function wsSetup() {
     socket.onmessage = function(msg) {  
         try {
             debug("WebSocket Recv:" + msg.data);
-            //XXX: TODO What are you going to do here?            
+            //XXX: TODO What are you going to do here?
+            var message = JSON.parse(msg.data);
+            for (var entity in message){
+                world[entity] = message[entity];
+            }
+            drawNextFrame();
+            
         } catch (e) {
             alert("socket on message: " + e);
         }

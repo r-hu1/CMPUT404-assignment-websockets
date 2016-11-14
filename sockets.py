@@ -29,14 +29,14 @@ app.debug = True
 
 # ---- self code
 
-client = list()
+clients = list()
 
 class Client:
     def __init__(self):
         self.queue = queue.Queue()
 
     def put(self,v):
-        self.queue.put_nowwait(v)
+        self.queue.put_nowait(v)
     
     def get(self):
         return self.queue.get()
@@ -111,14 +111,22 @@ def read_ws(ws,client):
             msg = ws.receive()
             print "WS RECV: %s" % msg
             
-            if (msg in not None):
+            if (msg is not None):
                 packet = json.loads(msg)
-                send_all_json(packet)
+                #send_all_json(packet)
+                for name, data in packet.iteritems():
+                    entity = myWorld.get(name)
+                    for i, j in data.iteritems():
+                        entity[i] = j
+                    myWorld.set(name, entity)
             else:
                 break
     
     except:
         '''read done'''
+        pass
+
+#retrun None
 #----------------------------------------
 
 
